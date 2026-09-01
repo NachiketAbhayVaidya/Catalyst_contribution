@@ -1,0 +1,64 @@
+services:
+  # Backend API (Express + MongoDB)
+  - type: web
+    name: catalyst-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ACCESS_TOKEN_EXPIRY
+        value: 1d
+      - key: REFRESH_TOKEN_EXPIRY
+        value: 10d
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_MODEL
+        value: gemini-3.6-flash
+      - key: GOOGLE_CLIENT_ID
+        value: 511892196193-lpkbh4rsoockut36vqk18c5qu8jb5087.apps.googleusercontent.com
+      # Set this to the frontend's Render URL after both services are live,
+      # e.g. https://catalyst-frontend.onrender.com (no trailing slash).
+      - key: CORS_ORIGIN
+        sync: false
+      # Fill these in from the Render dashboard - never commit real values.
+      - key: MONGO_URI
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ADMIN_SIGNUP_CODE
+        sync: false
+
+  # Frontend (Vite + React static site)
+  - type: web
+    name: catalyst-frontend
+    runtime: static
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_USE_MOCK
+        value: false
+      - key: VITE_GOOGLE_CLIENT_ID
+        value: 511892196193-lpkbh4rsoockut36vqk18c5qu8jb5087.apps.googleusercontent.com
+      # Set this to the backend's Render URL + /api/v1 once it's live,
+      # e.g. https://catalyst-backend.onrender.com/api/v1
+      - key: VITE_API_BASE_URL
+        sync: false
